@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationEcception;
+use App\Models\Book;
 
 class AdminController extends Controller
 {
@@ -14,9 +15,10 @@ class AdminController extends Controller
         $this-middleware('auth');
 
     }
-    public function index()
+    public function books()
     {
         $user = Auth::user();
-        return view ('home', compact('user'));
+        $books = Book::all();
+        return view ('book', compact('user','books'));
     }
 }
