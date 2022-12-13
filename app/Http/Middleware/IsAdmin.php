@@ -14,11 +14,11 @@ class IsAdmin
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next)
-    {
-        if(auth()->user()->roles_id ==1){
-            return $next($request);
-        }
-        return redirect('home')->with('error', 'Anda tidak memiliki akses sebagai admin');
-    }
+     public function handle(Request $request, Closure $next)
+     {
+         if(auth()->user()->roles_id == 1){
+             return $next($request);
+         }
+         return redirect('home')->with('error', 'Anda Tidak Memiliki Akses Sebagai Admin');
+     }
 }
