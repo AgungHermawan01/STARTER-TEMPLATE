@@ -6,34 +6,44 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Models\Book;
+use PDF;
 
 
 class AdminController extends Controller
 {
+    public function print_books(){
+        $books = Book::all();
+        $pdf =PDF::loadview('print_books', ['books' => $books]);
+        return $pdf->download('data_buku.pdf');
+    }
+
     public function __construct(){
         $this->middleware('auth');
     }
+
     public function index(){
         $user = Auth::user();
         return view('home', compact('user'));
 }
+
     public function books(){
         $user = Auth::user();
         $books= Book::all();
         return view('book', compact('user', 'books'));
 }
-public function submit_book(Request $req){
-    $validate = $req->validate([
+
+    public function submit_book(Request $req){
+        $validate = $req->validate([
         'judul' => 'required|max:255',
         'penulis' => 'required',
         'tahun' => 'required',
         'penerbit' => 'required',
-    ]);
-    $book = new Book;
-    $book->judul = $req->get('judul');
-    $book->penulis = $req->get('penulis');
-    $book->tahun = $req->get('tahun');
-    $book->penerbit = $req->get('penerbit');
+        ]);
+        $book = new Book;
+        $book->judul = $req->get('judul');
+        $book->penulis = $req->get('penulis');
+        $book->tahun = $req->get('tahun');
+        $book->penerbit = $req->get('penerbit');
 
     if ($req->hasFile('cover')) {
         $extension = $req->file('cover')->extension();
@@ -44,12 +54,12 @@ public function submit_book(Request $req){
         );
         $book->cover = $filename;
     }
-    $book->save();
-    $notification = array(
-        'message ' => 'Data buku berhasil ditambahkan',
-         'alert-type' => 'success'
-    );
-    return redirect()->route('admin.books')->with($notification);
+        $book->save();
+        $notification = array(
+            'message ' => 'Data buku berhasil ditambahkan',
+            'alert-type' => 'success'
+        );
+        return redirect()->route('admin.books')->with($notification);
 }
     //AJAX PROCESS
         public function getDataBuku($id)
@@ -101,4 +111,5 @@ public function submit_book(Request $req){
                     'message' => $message,
                 ]);
             }
+
         }
