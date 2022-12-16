@@ -33,7 +33,7 @@
                 <tbody>
                     @php $no=1; @endphp
                     @foreach($books as $book)
-                    <tr>
+                    <tr class="text-center">
                         <td>{{$no++}}</td>
                         <td>{{$book->judul}}</td>
                         <td>{{$book->penulis}}</td>
@@ -47,12 +47,9 @@
                             @endif
                         </td>
                         <td>
-                        <td>
                             <button type="button" id="btn-edit-buku" class="btn btn-success" data-toggle="modal"
                             data-target="#editBukuModal" data-id="{{ $book->id }}">Edit</button>
                             <button type="button" class="btn btn-danger" onclick="deleteConfirmation('{{$book->id}}', '{{$book->judul}}')">Hapus</button>
-                
-                        </td>
                         </td>
                     </tr>
                     @endforeach
@@ -102,4 +99,128 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="editBukuModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Data Buku</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{{ route('admin.book.update') }}" enctype="multipart/form-data">
+                        @csrf
+                        @method('PATCH')
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit-judul">Judul Buku</label>
+                                    <input type="text" class="form-control" name="judul" id="edit-judul" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-penulis">Penulis</label>
+                                    <input type="text" class="form-control" name="penulis" id="edit-penulis" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-tahun">Tahun</label>
+                                    <input type="year" class="form-control" name="tahun" id="edit-tahun" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-penerbit">Penerbit</label>
+                                    <input type="text" class="form-control" name="penerbit" id="edit-penerbit"
+                                        required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" id="image-area"></div>
+
+                                <div class="form-group">
+                                    <label for="edit-cover">Cover</label>
+                                    <input type="file" class="form-control" name="cover" id="edit-cover" />
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="id" id="edit-id"/>
+                    <input type="hidden" name="old-cover" id="edit-old-cover"/>
+
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-success">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>  
 @endsection
+
+@section('js')
+    <script>
+        $(function () {
+            $(document).on('click', '#btn-edit-buku', function () {
+                let id = $(this).data('id');
+                $('#image-area').empty();
+                $.ajax({
+                    type: "get",
+                    url: "{{url('/admin/ajaxadmin/dataBuku')}}/" + id,
+                    dataType: 'json',
+                    success: function (res) {
+                        $('#edit-judul').val(res.judul);
+                        $('#edit-penerbit').val(res.penerbit);
+                        $('#edit-penulis').val(res.penulis);
+                        $('#edit-tahun').val(res.tahun);
+                        $('#edit-id').val(res.id);
+                        $('#edit-old-cover').val(res.cover);
+                        if (res.cover !== null) {
+                            $('#image-area').append(
+                                "<img src='" + baseurl + "/storage/cover_buku/" + res
+                                .cover + "' width='200px' />"
+                            );
+                        } else {
+                            $('#image-area').append('[Gambar tidak tersedia]');
+                        }
+                    },
+                });
+            });
+        });
+
+        function deleteConfirmation(npm, judul) {
+            swal.fire({
+                title: "Hapus?",
+                type: 'warning',
+                text: "Apakah anda yakin akan menghapus data buku dengan judul " + judul + "?!",
+                showCancelButton: !0,
+                confirmButtonText: "Ya, lakukan!",
+                cancelButtonText: "Tidak, batalkan!",
+                reverseButton: !0
+            }).then(function (e) {
+                if (e.value === true) {
+                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                    $.ajax({
+                        type: 'POST',
+                        url: "books/delete/" + npm,
+                        data: {
+                            _token: CSRF_TOKEN
+                        },
+                        dataType: 'JSON',
+                        success: function (results) {
+                            if (results.success === true) {
+                                swal.fire("Done!", results.message, "success");
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 1000);
+                            } else {
+                                swal.fire("Error!", results.message, "error");
+                            }
+                        }
+                    });
+                } else {
+                    e.dismiss;
+                }
+            }, function (dismiss) {
+                return false;
+            })
+        }
+        </script>
+        @stop
