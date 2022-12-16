@@ -28,4 +28,13 @@ Route::get('/home', function() {
 })->name('home')->middleware('auth');
 
 Route::get('admin/home', 
-[App\Http\Controllers\AdminController::class, 'index'])->name('admin.home')->middleware('is_admin');
+[App\Http\Controllers\
+AdminController::class, 
+'index'])->name('admin.home')->middleware('is_admin');
+
+Route::get('admin/books', [App\Http\Controllers
+\AdminController::class, 'books'])->name('admin.books')->middleware('is_admin');
+
+//PENGELOLAAN BUKU 
+Route::post('admin/books', [App\Http\Controllers\
+AdminController::class, 'submit_book'])->name('admin.book.submit')->middleware('is_admin');

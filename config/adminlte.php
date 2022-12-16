@@ -318,7 +318,8 @@ return [
             'label'       => 4,
             'label_color' => 'success',
         ],
-            ['text' => 'Buku',
+        [
+            'text' => 'Buku',
             'url' => 'admin/books',
             'icon' => 'fas fa-fw fa-book',
             'can' => 'isAdmin',
