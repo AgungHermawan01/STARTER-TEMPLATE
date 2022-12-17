@@ -15,10 +15,14 @@
             <button class="btn btn-primary" data-toggle="modal" data-target="#tambahBukuModal"><i
                     class="fa fa-plus"></i>
                 Tambah Data</button>
+
                 <a href="{{ route('admin.print.books') }}" target="_blank" class="btn btn-secondary">
                 <i class="fa fa-print"></i>Cetak PDF</a>
+
+                <a href="{{ route('admin.book.export') }}" target="_blank" class="btn btn-info" target="_blank">Export</a>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#importDataModal">Import</button>
             
-                <hr />
+                <hr/>
 
             <table id="table-data" class="table table-bordered">
                 <thead>
@@ -155,7 +159,35 @@
                 </div>
             </div>
         </div>
-    </div>  
+    </div>
+    <!-- MODAL IMPORT DATA FORM -->
+        <div class ="modal fade" id="importDataModal" tabindex="-1"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Import Data</h5>
+                        <button type="button" class="Close" data-dismiss="modal" aria-label="Close"> 
+                         <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="form-body">
+                        <form method="post" action="{{ route('admin.book.import') }}" enctype="multipart/form-data">
+                            @csrf
+                                <div class="form-group">
+                                <label for="cover">Upload File</label>
+                                <input type="file" class="form-control" name="file"/>
+                            </div>
+                        </div>
+                     <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"data-dismiss="mdal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Import Data</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('js')
@@ -224,6 +256,8 @@
             }, function (dismiss) {
                 return false;
             })
+
         }
+
         </script>
         @stop
